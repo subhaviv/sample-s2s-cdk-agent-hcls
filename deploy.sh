@@ -45,6 +45,12 @@ cd ..
 
 cp .env ./backend/
 
+# Install CDK dependencies
+echo -e "${GREEN}Installing CDK dependencies...${NC}"
+cd cdk
+npm install
+cd ..
+
 echo -e "${GREEN}Deploying the CDK stacks...${NC}"
 cd cdk
 npx aws-cdk deploy --all --require-approval never
