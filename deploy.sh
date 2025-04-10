@@ -34,22 +34,13 @@ echo -ne "\n${YELLOW}AWS Region:${NC} "
 aws ec2 describe-availability-zones --output text --query 'AvailabilityZones[0].[RegionName]'
 echo ""
 
+npm install
+
 # 2. Install frontend dependencies
 echo -e "${GREEN}Installing frontend dependencies and building the asset...${NC}"
-cd frontend
-## Copy system prompt contents into /public
-cp ../config/system_prompt.txt ./public
-npm install
-npm run build
-cd ..
-
+cp ./config/system_prompt.txt ./frontend/public
+npm run build:frontend
 cp .env ./backend/
-
-# Install CDK dependencies
-echo -e "${GREEN}Installing CDK dependencies...${NC}"
-cd cdk
-npm install
-cd ..
 
 echo -e "${GREEN}Deploying the CDK stacks...${NC}"
 cd cdk
