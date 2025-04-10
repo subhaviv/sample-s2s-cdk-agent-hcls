@@ -1,0 +1,8 @@
+aws_sdk_bedrock_runtime>=0.0.1
+boto3>=1.37.31
+cryptography>=41.0.5
+jwcrypto>=1.4.2
+pyjwt>=2.6.0
+python-dotenv>=1.1.0
+smithy-aws-core==0.0.1
+websockets>=15.0.1

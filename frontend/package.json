@@ -1,0 +1,19 @@
+{
+  "name": "ui-stream",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "preview": "npx vite preview"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.758.0",
+    "@aws-sdk/credential-providers": "^3.768.0",
+    "aws-sdk": "^2.1692.0"
+  },
+  "devDependencies": {
+    "vite": "^6.2.3"
+  }
+}
