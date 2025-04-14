@@ -19,24 +19,37 @@
 refresh_aws_credentials() {
     CREDS=$(curl -s 169.254.170.2$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
 
+    if [[ -z "$CREDS" ]]; then
+        echo "Failed to fetch AWS credentials."
+        exit 1
+    fi
+
     export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.AccessKeyId')
     export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.SecretAccessKey')
     export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Token')
-    export AWS_REGION=$(curl -s 169.254.169.254/latest/meta-data/placement/region || echo "us-west-2")
+    export AWS_REGION=$(curl -s 169.254.169.254/latest/meta-data/placement/region || echo "us-east-1")
 
     echo "AWS credentials refreshed"
+}
+
+# Check if credentials are about to expire and refresh if necessary
+check_and_refresh_credentials() {
+    aws sts get-caller-identity > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        # Credentials are invalid or expired, refresh them
+        refresh_aws_credentials
+    fi
 }
 
 # Initial fetch
 refresh_aws_credentials
 
-# Start background refresher that writes to a file
 (
-    while true; do
-        sleep 300
-        refresh_aws_credentials
-    done
+  while true; do
+    sleep 300  # Check every 5 minutes, you can adjust this if you want less frequent checks
+    check_and_refresh_credentials
+  done
 ) &
 
-# Run app in same shell (so env changes apply)
+
 "$@"
