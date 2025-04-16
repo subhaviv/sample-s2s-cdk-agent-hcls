@@ -21,6 +21,7 @@ import uuid
 import os
 import logging
 import time
+import requests
 
 
 # Import the Cognito validation module
@@ -83,10 +84,25 @@ class BedrockStreamManager:
         self.toolName = ""
 
     def _initialize_client(self):
+        """Initialize the Bedrock client with fresh credentials."""
+        # Fetch fresh credentials from ECS container metadata endpoint
+        try:
+            uri = os.environ.get("AWS_CONTAINER_CREDENTIALS_RELATIVE_URI")
+            if uri:
+                logger.info("Fetching fresh AWS credentials for Bedrock client")
+                response = requests.get(f"http://169.254.170.2{uri}")
+                if response.status_code == 200:
+                    creds = response.json()
+                    os.environ['AWS_ACCESS_KEY_ID'] = creds['AccessKeyId']
+                    os.environ['AWS_SECRET_ACCESS_KEY'] = creds['SecretAccessKey']
+                    os.environ['AWS_SESSION_TOKEN'] = creds['Token']
+                    logger.info("AWS credentials refreshed successfully")
+                else:
+                    logger.error(f"Failed to fetch fresh credentials: {response.status_code}")
+        except Exception as e:
+            logger.error(f"Error refreshing credentials: {str(e)}")
 
-        self.last_credential_refresh = time.time()
-
-        """Initialize the Bedrock client."""
+        # Initialize the Bedrock client with the fresh credentials
         config = Config(
             endpoint_uri=f"https://bedrock-runtime.{self.region}.amazonaws.com",
             region=self.region,
@@ -96,12 +112,11 @@ class BedrockStreamManager:
         )
         self.bedrock_client = BedrockRuntimeClient(config=config)
 
+
     def _ensure_fresh_client(self):
-        """Check if credentials need refresh and reinitialize client if needed."""
-        # Refresh client every 25 minutes to ensure fresh credentials
-        if time.time() - self.last_credential_refresh > 1500:  # 25 minutes in seconds
-            logger.info("Refreshing Bedrock client with new credentials")
-            self._initialize_client()
+        """Ensure client has fresh credentials by reinitializing."""
+        logger.info("Ensuring fresh credentials for Bedrock client")
+        self._initialize_client()
 
     async def initialize_stream(self):
 
