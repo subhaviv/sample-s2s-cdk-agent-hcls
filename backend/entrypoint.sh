@@ -16,27 +16,21 @@
 #
 
 # Function to refresh credentials
-refresh_aws_credentials() {
-    CREDS=$(curl -s 169.254.170.2$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
-
-    export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.AccessKeyId')
-    export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.SecretAccessKey')
-    export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Token')
-    export AWS_REGION=$(curl -s 169.254.169.254/latest/meta-data/placement/region || echo "us-east-1")
-
-    echo "AWS credentials refreshed"
+refresh_credentials() {
+  # Get credentials from ECS container metadata endpoint
+  CREDS=$(curl -s 169.254.170.2$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
+  
+  # Extract credentials and set as environment variables
+  export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.AccessKeyId')
+  export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.SecretAccessKey')
+  export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Token')
+  export AWS_REGION=$(curl -s 169.254.169.254/latest/meta-data/placement/region || echo "us-east-1")
+  
+  echo "AWS credentials refreshed at $(date)"
 }
 
-# Initial fetch
-refresh_aws_credentials
+# Initial credential fetch
+refresh_credentials
 
-# Start background refresher that writes to a file
-(
-    while true; do
-        sleep 300
-        refresh_aws_credentials
-    done
-) &
-
-# Run app in same shell (so env changes apply)
-"$@"
+# Execute the main application
+exec "$@"
