@@ -345,12 +345,17 @@ class BedrockStreamManager:
                                     else:
                                         content_json_string = str(toolResult)
 
+                                    # check if tool use resulted in an error that needs to be reported to Sonic
+                                    status = 'error' if toolResult.get('status') == 'error' else 'success'
+                                    logger.info(f"Tool result {toolResult} and value of status is {status}")
+
                                     tool_result_event = {
                                         "event": {
                                             "toolResult": {
                                                 "promptName": self.prompt_name,
                                                 "contentName": toolContent,
                                                 "content": content_json_string,
+                                                "status" : status
                                             }
                                         }
                                     }
