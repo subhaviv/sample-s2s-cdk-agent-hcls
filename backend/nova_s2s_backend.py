@@ -347,7 +347,7 @@ class BedrockStreamManager:
 
                                     # check if tool use resulted in an error that needs to be reported to Sonic
                                     status = 'error' if toolResult.get('status') == 'error' else 'success'
-                                    logger.info(f"Tool result {toolResult} and value of status is {status}")
+                                    # logger.info(f"Tool result {toolResult} and value of status is {status}")
 
                                     tool_result_event = {
                                         "event": {
