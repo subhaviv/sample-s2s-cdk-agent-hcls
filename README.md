@@ -236,6 +236,3 @@ VITE_COGNITO_DOMAIN=https://auth.example.com
 
 ## FAQ/trouble shooting
 
-1. The default prompt asks me for my phone number, but when I tell it a number that doesn't exist in my DynamoDB table, the conversation stops. What should I do?
-
-- It is currently designed to fail in the backend and stop the conversation. Take a look at the ECS logs and see if the tool use is invoked and handle errors that fits your use case.
