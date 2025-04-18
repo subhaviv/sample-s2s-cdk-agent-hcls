@@ -1,15 +1,15 @@
-# Nova S2S Call Center Agent w/ Tools
+# Amazon Nova Sonic Call Center Agent w/ Tools
 
 By Reilly Manton (rcmanton@amazon.com); Shuto Araki (shuaraki@amazon.com); Andrew Young (ajuny@amazon.com)
 
-This template provides an AWS cloud-based solution for deploying applications that interact with the Nova S2S Sonic Model. It serves as a foundation for developing future speech-to-speech (S2S) tooling use cases. Unlike previous implementations that required locally hosted backend and frontend, this cloud architecture leverages:
+This template provides an AWS cloud-based solution for deploying applications that interact with the Amazon Nova Sonic Model. It serves as a foundation for developing future speech-to-speech tooling use cases. Unlike previous implementations that required locally hosted backend and frontend, this cloud architecture leverages:
 
 - **Frontend:** Hosted on Amazon CloudFront and S3
 - **Backend:** Deployed on Amazon ECS
 - **Connection:** Websocket communication through Network Load Balancer (NLB)
 - **Authentication:** Integrated Amazon Cognito authentication
 
-The sample application demonstrates Amazon Bedrock's Nova speech-to-speech model interactions in a customer support context. The S2S model acts as AnyTelco's call center agent Telly and responds to the user in real time. It has two tools at its disposal to augment its knowledge with data:
+The sample application demonstrates Amazon Nova Sonic model interactions in a customer support context. The model acts as AnyTelco's call center agent Telly and responds to the user in real time. It has two tools at its disposal to augment its knowledge with data:
 
 1. Customer information lookup via phone number
 2. Knowledge base search for AnyTelco company information such as plan features and pricing
@@ -38,11 +38,11 @@ The sample application demonstrates Amazon Bedrock's Nova speech-to-speech model
 ### Speech-to-Speech Conversation Flow
 
 1. The user signs onto the frontend hosted on Amazon Cloudfront with a static S3 web page. If the user is unauthenticated, they are re-directed to the Amazon Cognito sign on page where they can sign on with their credentials.
-2. The user clicks start seession to open the websocket connection to the python backend. The connect payload contains the JWT which is validated against cognito by the python backend before connection is established.
-3. Speech data is transmitted bidirectionally through this connection for real-time conversation. The user speaks and audio from the user is sent to the Nova Sonic S2S model through the python backend.
-4. The S2S model processes the audio. It first outputs a transcription of the user audion. It then does one of two things:
+2. The user clicks start session to open the websocket connection to the python backend. The connect payload contains the JWT which is validated against cognito by the python backend before connection is established.
+3. Speech data is transmitted bidirectionally through this connection for real-time conversation. The user speaks and audio from the user is sent to the Nova Sonic model through the python backend.
+4. Nova Sonic processes the audio. It first outputs a transcription of the user audion. It then does one of two things:
    1. Outputs a response which is streamed back to the user. This response includes the assistant response audio and assistant response text.
-   2. Outputs a tool use request which is picked up and implemented by the Python backend. The backend returns the tool result to the S2S model which generates a final response which is streamed back to the user. This response includes the assistant response audio and assistant response text.
+   2. Outputs a tool use request which is picked up and implemented by the Python backend. The backend returns the tool result to Nova Sonic which generates a final response which is streamed back to the user. This response includes the assistant response audio and assistant response text.
 
 ## Getting started
 
@@ -54,20 +54,24 @@ The versions below are tested and validated. Minor version differences would lik
 - Node.js v20
 - Node Package Manager (npm) v10.8
 - Docker v27.4
-- AWS Account
+- AWS Account (make sure your account is bootstrapped for CDK)
 - Amazon Nova Sonic is enabled via the [Bedrock model access console](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess)
 - Chrome or Safari browser environment (Firefox is currently not supported)
 - Working microphone and speakers
 
 ### Deployment
 
-1. Update the environment variables to point to your Amazon Dynamodb table and your Bedrock Knowledge Base
+1. [Optional] Update the environment variables to point to your Amazon Dynamodb table and your Bedrock Knowledge Base
 
-Copy `template.env` to a new file `.env` and update the `KNOWLEDGE_BASE_ID` and `DYNAMODB_TABLE_NAME` to your knowledge base ID and your table name. For table structure, the tool expects `phone_number` (S) as the primary key (assuming telecom call center use case) and you can add any other keys you want. (e.g., "plan", "current_bill", etc.) Ask about those attributes in the chat to find a good
+You can skip this section if you don't intend to use these tools or build your own with a simple interaction with Amazon Nova Sonic.
+
+Copy `template.env` to a new file `.env` and update the `KNOWLEDGE_BASE_ID` and `DYNAMODB_TABLE_NAME` to your knowledge base ID and your table name. For table structure, the tool expects `phone_number` (S) as the primary key (assuming telecom call center use case) and you can add any other keys you want. (e.g., "plan", "current_bill", etc.) Ask about those attributes in the chat to confirm the profile search tool is working. Knowledge base can be loaded with your own contact center guideline texts as needed.
+
+We may add a separate construct to create those resources through CDK if there is enough demand. Let us know by raising an issue.
 
 If you want to bring your own VPC rather than the solution deploying a new VPC for you, specify your VPC ID in `VPC_ID`.
 
-2. Ensure you are deploying to aws region `us-east-1` since this is the only region that currently supports Amazon Nova Sonic S2S model in Amazon Bedrock.
+2. Ensure you are deploying to aws region `us-east-1` since this is the only region that currently supports Amazon Nova Sonic model in Amazon Bedrock.
 
 3. Run the deployment script to deploy two stacks: Network and S2S. Make sure both stacks get deployed.
 
@@ -130,7 +134,7 @@ You can change the system prompt from the UI.
 
 ### Tooling
 
-Tooling for Amazon Nova S2S is implemented in the backend python application. The Nova S2S model outputs text indicating it wants to use a tool, the code parses and uses the tool, and the tool response is returned back to the model for use in generation.
+Tooling for Amazon Nova Sonic is implemented in the backend python application. Amazon Nova Sonic outputs text indicating it wants to use a tool, the code parses and uses the tool, and the tool response is returned back to the model for use in generation.
 
 To add a new tool:
 
@@ -187,7 +191,7 @@ tools: [
 
 3. Import your new tool implementation in `backend/nova_s2s_backend.py`. For example, we import the `backend/retrieve_user_profile.py` like `import knowledge_base_lookup`.
 
-4. Add logic to call your tool in `backend/nova_s2s_backend.py` in the function `processToolUse`. In this method, we parse the S2S models' tool request to find the tool name and any tool inputs. We then call the `main()` method in the python file that implements that tool.
+4. Add logic to call your tool in `backend/nova_s2s_backend.py` in the function `processToolUse`. In this method, we parse the Amazon Nova Sonic's tool request to find the tool name and any tool inputs. We then call the `main()` method in the python file that implements that tool.
 
 ```python
 async def processToolUse(self, toolName, toolUseContent):
