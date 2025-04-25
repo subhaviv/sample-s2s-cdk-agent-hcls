@@ -53,10 +53,10 @@ The versions below are tested and validated. Minor version differences would lik
 - Python 3.12
 - Node.js v20
 - Node Package Manager (npm) v10.8
-- Docker v27.4
+- Docker v27.4 (if your build environment is x86, make sure your docker environment is configured to be able to build Arm64 container images)
 - AWS Account (make sure your account is bootstrapped for CDK)
 - Amazon Nova Sonic is enabled via the [Bedrock model access console](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess)
-- Chrome or Safari browser environment (Firefox is currently not supported)
+- Chrome, Safari, or Edge browser environment (Firefox is currently not supported)
 - Working microphone and speakers
 
 ### Deployment
@@ -222,17 +222,17 @@ async def processToolUse(self, toolName, toolUseContent):
         return results
 ```
 
-### Local frontend development
+### Local development
 
-Create a `.env.local` file under `frontend` folder like this:
-
-```bash
-VITE_COGNITO_USER_POOL_ID=us-east-1_examplePoolId
-VITE_COGNITO_APP_CLIENT_ID=exampleClientId123456
-VITE_BACKEND_ENDPOINT=https://api.example.com
-VITE_APP_URL=https://app.example.com
-VITE_COGNITO_DOMAIN=https://auth.example.com
-```
+🚧 Coming soon: we are looking for ways to make development easier by running both frontend and backend locally (See: https://github.com/aws-samples/sample-sonic-cdk-agent/issues/19)
 
 ## FAQ/trouble shooting
 
+1. I get `ERROR: process "/bin/sh -c chmod +x entrypoint.sh" did not complete successfully: exit code: 255` during build time.
+
+- Your docker environment in x86 may not be configured properly. You may need to change the FROM statement in the backend [Dockerfile](./backend/Dockerfile).
+
+```
+ARG TARGETARCH=arm64
+FROM --platform=$TARGETARCH python:3.12
+```
