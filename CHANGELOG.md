@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-- [feature] Easier system prompt adjustment from the UI
-- [developer experience] Easier custom tool extension
+- Adapt to an official version of the async clients for the [AWS SDK for Python](https://github.com/awslabs/aws-sdk-python/tree/develop) when the experimental one becomes official.
+- [developer experience] Easier custom tool extension (through some framework)
+
+## [0.1.3] - 2025-04-25
+
+- [developer experience] You can now locally develop both frontend and backend before you deploy.
+
+Iterating through tool addition and UI changes takes time to verify when you need to run ./deploy.sh every time for even the small changes. Now you don't have to wait for the deployment! Simply run `npm run dev` on the project root to spin up the frontend server that talks to the local backend container.
+
+See https://github.com/aws-samples/sample-sonic-cdk-agent/issues/19 with an awesome PR: https://github.com/aws-samples/sample-sonic-cdk-agent/pull/20 for more details.
 
 ## [0.1.2] - 2025-04-20
 
