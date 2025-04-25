@@ -16,11 +16,17 @@
 #
 
 import json
+import logging
 import boto3
 import sys
 import os
 from dotenv import load_dotenv
 
+# Configure logging
+LOGLEVEL = os.environ.get("LOGLEVEL", "INFO").upper()
+logging.basicConfig(level=LOGLEVEL, format="%(asctime)s %(message)s")
+logger = logging.getLogger(__name__)
+RUNNING_IN_DEV_MODE = os.environ.get("DEV_MODE", "False").lower() == "true"
 
 def get_knowledge_base_id():
     """
@@ -37,12 +43,13 @@ def get_knowledge_base_id():
 
     return knowledge_base_id
 
+knowledge_base_id = get_knowledge_base_id()
+bedrock_agent = boto3.client("bedrock-agent-runtime")
 
 def main(query):
-    knowledge_base_id = get_knowledge_base_id()
-    try:
-        bedrock_agent = boto3.client("bedrock-agent-runtime")
 
+    try:
+        logger.info(f"looking up informaation for query:{query}")
         # Retrieve from your KB using the query
         response = bedrock_agent.retrieve(
             knowledgeBaseId=knowledge_base_id,
@@ -70,6 +77,8 @@ def main(query):
 
         # Create the output JSON
         output = {"query": query, "results": results, "result_count": len(results)}
+
+        logger.info(f"output:{output}")
 
         return output
 

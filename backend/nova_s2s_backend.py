@@ -21,6 +21,8 @@ import warnings
 import asyncio
 import websockets
 
+
+
 # Import the Cognito validation module
 import cognito
 
@@ -41,8 +43,10 @@ from smithy_aws_core.credentials_resolvers.environment import (
     EnvironmentCredentialsResolver,
 )
 
-import knowledge_base_lookup
-import retrieve_user_profile
+import knowledge_base_lookup as kb
+from patient_db import PatientDBService
+
+
 
 # Configure logging
 LOGLEVEL = os.environ.get("LOGLEVEL", "INFO").upper()
@@ -52,6 +56,11 @@ RUNNING_IN_DEV_MODE = os.environ.get("DEV_MODE", "False").lower() == "true"
 
 # Suppress warnings
 warnings.filterwarnings("ignore")
+
+def get_patient(patient_name: str) -> dict:
+    """Convenience function to get patient data"""
+    return PatientDBService.get_patient_by_name(patient_name)
+
 # Suppress websockets server non-critical logs that are triggered by NLB health checks (empty TCP packets)
 logging.getLogger("websockets.server").setLevel(logging.CRITICAL)
 
@@ -375,30 +384,60 @@ class BedrockStreamManager:
 
     async def processToolUse(self, toolName, toolUseContent):
         """Return the tool result"""
-        tool = toolName.lower()
-        results = {}
+        print(f"Tool Use Content: {toolUseContent}")
+        toolName = toolName.lower()
 
-        if tool == "lookup":
-            # Extract query from toolUseContent
-            if isinstance(toolUseContent, dict) and "content" in toolUseContent:
-                # Parse the JSON string in the content field
-                query_json = json.loads(toolUseContent.get("content"))
-                query = query_json.get("query", "")
-                logger.info(f"Extracted KB lookup query")
+        query = None
+        if toolUseContent.get("content"):
+            # Parse the JSON string in the content field
+            query_json = json.loads(toolUseContent.get("content"))
 
-                # Call the knowledge base lookup
-                results = knowledge_base_lookup.main(query)
+            print(f"Extracted query: {query_json}")
 
-        elif tool == "userprofilesearch":
-            if isinstance(toolUseContent, dict) and "content" in toolUseContent:
-                # Parse the JSON string in the content field
-                phone_number_json = json.loads(toolUseContent.get("content"))
-                phone_number = phone_number_json.get("phone_number", "")
-                logger.info(f"Extracted phone number.")
+        if toolName == "getproductinfo":
+            query = query_json.get("query", "")
+            if not query:
+                query = "bad query"
 
-                results = retrieve_user_profile.main(phone_number)
+            results = kb.main(query)
+            # print("///",results)
+            return {"result": results}
+        if toolName == "getorderstatus":
 
-        return results
+            customerName = query_json.get("customerName", "")
+            if not customerName:
+                return {"result": "Customer not found.ask for customer name."}
+
+            patient = get_patient(patient_name=customerName)
+
+            if patient:
+                result= f"Order Status: {patient['OrderStatus']} , Action : {patient['Action']}"
+                print(result)
+                return {"result": result}
+            else:
+                return {"result": "No orders found for the customer."}
+
+        if toolName == "getlabresults":
+            customerName = query_json.get("customerName", "")
+            if not customerName:
+                return {"result": "No customer found. ask for customer Name"}
+
+            patient = get_patient(patient_name=customerName)
+
+            if patient:
+                return {"result": patient["LabResult"]}
+            else:
+                return {"result": "No lab results found."}
+        
+        if toolName == "transfertoliveagent":
+            #here you will have customer name, but you can summarize the convo and pass to live agent
+            customerName = query_json.get("customerName", "")
+
+            return {"result": "Transferring customer to live agent."}
+
+           
+
+        return {}
 
 
 async def websocket_handler(websocket, url, headers=None):

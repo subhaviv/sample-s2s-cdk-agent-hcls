@@ -43,6 +43,7 @@ def get_dynamodb_table_name():
     table_name = os.getenv("DYNAMODB_TABLE_NAME")
 
     if not table_name:
+        logger.error("DYNAMODB_TABLE_NAME not found in .env file")
         raise ValueError("DYNAMODB_TABLE_NAME not found in .env file")
 
     return table_name

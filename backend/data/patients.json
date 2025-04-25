@@ -1,0 +1,83 @@
+ 
+{
+    "patients":[
+    {
+      "FirstName": "Jordan",
+      "LastName": "Johnson",
+      "Name": "Jordan Johnson",
+      "patientId":"202322",
+      "PhoneNumber": "1-212-555-7843",
+      "DateOfBirth": "03-14-1942",
+      "Address": "90911 Silverwood Boulevard Asheville, North Carolina",
+      "Zip": "28801",
+      "OrderStatus": "Kit not Shipped",
+      "Action": "Exact Requires information prior to shipping collection kit",
+      "LabResult": "Not applicable"
+    },
+    {
+      "FirstName": "Taylor",
+      "LastName": "Brown",
+      "Name": "Taylor Brown",
+      "patientId":"202312",
+      "PhoneNumber": "1-305-555-2917",
+      "DateOfBirth": "08-25-1966",
+      "Address": "721 Crimson Ridge Drive Boise, Idaho",
+      "Zip": "83702",
+      "OrderStatus": "Results Available",
+      "Action": "Check Results",
+      "LabResult": {
+        "Result": "Negative",
+        "Date": "JAN-11-2025",
+        "Time": "10:30 AM",
+        "Lab": "Exact Laboratories"
+      }
+     
+
+    },
+    {
+      "FirstName": "Casey",
+      "LastName": "Williams",
+      "Name": "Casey Williams",
+      "patientId":"202328",
+      "PhoneNumber": "1-415-555-6302",
+      "DateOfBirth": "12-03-1958",
+      "Address": "2190 Whispering Pines Avenue Lubbok, Texas",
+      "Zip": "79401",
+      "OrderStatus": "Results Available",
+      "Action": "Check results",
+      "LabResult": {
+        "Result": "Positive",
+        "Date": "FEB-11-2025",
+        "Time": "10:30 AM",
+        "Lab": "Exact Laboratories"
+      }
+
+    },
+    {
+      "FirstName": "Max",
+      "LastName": "Smith",
+      "Name": "Max Smith",
+      "patientId":"20222322",
+      "PhoneNumber": "1-818-555-1034",
+      "DateOfBirth": "06-18-1967",
+      "Address": "9 Sunset Grove Lane Syracuse, New York",
+      "Zip": "13027",
+      "OrderStatus": "Kit Received by Patient",
+      "Action": "Instructions for using the kit",
+      "LabResult":"Not applicable"
+    },
+    {
+      "FirstName": "Riley",
+      "LastName": "Jones",
+      "Name": "Riley Jones",
+      "patientId":"20239922",
+      "PhoneNumber": "1-929-555-7621",
+      "DateOfBirth": "11-22-1971",
+      "Address": "Highway 47, Mile Marker 125 California 94533",
+      "Zip": "94533",
+      "OrderStatus": "Kit Received by Patient",
+      "Action": "Options for returning their Kit",
+      "LabResult":"Not applicable"
+    }
+  ]
+}

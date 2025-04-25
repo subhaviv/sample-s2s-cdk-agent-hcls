@@ -19,6 +19,109 @@ import { getCognitoAuth } from "./cognito.js";
 
 const audioPlayer = new AudioPlayer();
 
+const DEFAULT_TOOL_CONFIG = {
+  "toolChoice": {
+    "any": {}
+  },
+  tools: [{
+    toolSpec: {
+      name: "getOrderStatus",
+      description: "get information on the customers order status for the cologaurd Kit.",
+      inputSchema: {
+        json: JSON.stringify({
+          "type": "object",
+          "properties": {
+            "customerName": {
+              "type": "string",
+              "description": "The customer Name",
+
+            },
+            "phoneNumber": {
+              "type": "string",
+              "description": "The customer phone number",
+
+            }
+          },
+          "required": ["customerName", "phoneNumber"]
+        }
+        )
+      }
+    }
+  },
+  {
+    toolSpec: {
+      name: "getProductInfo",
+      description: "Gets general information about the Cologuard Kit",
+      inputSchema: {
+        json: JSON.stringify({
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The original question about the cologaurd kit",
+              "default": "get cologaurd kit usage instruction",
+            }
+          },
+          "required": ["query"],
+        }
+        )
+      }
+    }
+  },
+  {
+    toolSpec: {
+      name: "getLabResults",
+      description: "gets lab results for the customer. Handle positive results empathetically",
+      inputSchema: {
+        json: JSON.stringify({
+          "type": "object",
+          "properties": {
+            "customerName": {
+              "type": "string",
+              "description": "The customer Name",
+
+            },
+            "phoneNumber": {
+              "type": "string",
+              "description": "The customer phone number",
+
+            }
+          },
+          "required": ["customerName", "phoneNumber"]
+        }
+        )
+      }
+    }
+  },
+  {
+    toolSpec: {
+      name: "transferToLiveAgent",
+      description: "Transfers the customer to a live agent",
+      inputSchema: {
+        json: JSON.stringify({
+          "type": "object",
+          "properties": {
+            "customerName": {
+              "type": "string",
+              "description": "The customer Name",
+
+            },
+            "phoneNumber": {
+              "type": "string",
+              "description": "The customer phone number",
+
+            }
+          },
+          "required": ["customerName", "phoneNumber"]
+        }
+        )
+      }
+    }
+  }
+  ]
+};
+
 export class WebSocketEventManager {
   constructor(fallbackWsUrl) {
     this.cognitoAuth = getCognitoAuth();
@@ -306,57 +409,15 @@ export class WebSocketEventManager {
             sampleRateHertz: 24000,
             sampleSizeBits: 16,
             channelCount: 1,
-            voiceId: "tiffany", // Match the voice ID in your backend
+            voiceId: "matthew", // Match the voice ID in your backend
             encoding: "base64",
             audioType: "SPEECH",
           },
           toolUseOutputConfiguration: {
             mediaType: "application/json",
           },
-          toolConfiguration: {
-            tools: [
-              {
-                toolSpec: {
-                  name: "lookup",
-                  description:
-                    "Runs query against a knowledge base to retrieve information.",
-                  inputSchema: {
-                    json: JSON.stringify({
-                      $schema: "http://json-schema.org/draft-07/schema#",
-                      type: "object",
-                      properties: {
-                        query: {
-                          type: "string",
-                          description: "the query to search",
-                        },
-                      },
-                      required: ["query"],
-                    }),
-                  },
-                },
-              },
-              {
-                toolSpec: {
-                  name: "userProfileSearch",
-                  description:
-                    "Search for a user's account and phone plan information by phone number",
-                  inputSchema: {
-                    json: JSON.stringify({
-                      $schema: "http://json-schema.org/draft-07/schema#",
-                      type: "object",
-                      properties: {
-                        phone_number: {
-                          type: "string",
-                          description: "the user's phone number",
-                        },
-                      },
-                      required: ["phone_number"],
-                    }),
-                  },
-                },
-              },
-            ],
-          },
+          toolConfiguration:DEFAULT_TOOL_CONFIG ,
+       
         },
       },
     };
