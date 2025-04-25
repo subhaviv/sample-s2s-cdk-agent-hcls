@@ -224,7 +224,13 @@ async def processToolUse(self, toolName, toolUseContent):
 
 ### Local development
 
-🚧 Coming soon: we are looking for ways to make development easier by running both frontend and backend locally (See: https://github.com/aws-samples/sample-sonic-cdk-agent/issues/19)
+Assume credentials for an AWS account with Amazon Nova Sonic enabled in Amazon Bedrock and export: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN`.
+
+Run `npm run dev` in the same shell session as above to start frontend and backend containers.
+Both use a file watching mechanism to be notified of local code changes and reload automatically.
+Re-run the `npm` command only if changes are made to the Dockerfile, Python libraries or NPM dependencies that require installation, as these are not picked up by the file watcher.
+
+The frontend is accessible at http://localhost:5173/ and the backend at http://localhost:8080/, with authentication disabled for both.
 
 ## FAQ/trouble shooting
 
@@ -236,3 +242,7 @@ async def processToolUse(self, toolName, toolUseContent):
 ARG TARGETARCH=arm64
 FROM --platform=$TARGETARCH python:3.12
 ```
+
+2. `npm run dev` hangs and the backend container does not exit. I get the error `docker: Error response from daemon: driver failed programming external connectivity on endpoint s2s-backend-dev` when I try to run the command again.
+
+Run `docker rm -f s2s-backend-dev` to remove the running container image and run `npm run dev` again.
