@@ -517,7 +517,7 @@ function createHtmlStructure() {
   document.body.innerHTML = `
     <div id="app">
       <div class="header">
-        <h1>Nova Sonic Playground - Exact Sciences</h1>
+        <h1>Nova Sonic Playground</h1>
         <div class="header-controls">
           <div class="timer-container">
             <div class="timer-icon">🕐</div>

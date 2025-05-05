@@ -44,6 +44,6 @@ cp .env ./backend/
 
 echo -e "${GREEN}Deploying the CDK stacks...${NC}"
 cd cdk
-npx aws-cdk deploy --all --require-approval never
+npx aws-cdk deploy --all --require-approval never --force
 
 echo "${GREEN}✅️ Deployment script exited with status 0.${NC}"

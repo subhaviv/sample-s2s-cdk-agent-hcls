@@ -37,6 +37,7 @@ def get_knowledge_base_id():
 
     # Get the knowledge base ID
     knowledge_base_id = os.getenv("KNOWLEDGE_BASE_ID")
+ 
 
     if not knowledge_base_id:
         raise ValueError("KNOWLEDGE_BASE_ID not found in .env file")
@@ -85,6 +86,7 @@ def main(query):
     except Exception as e:
         error = {"error": f"Error querying knowledge base: {str(e)}"}
         print(json.dumps(error))
+        logger.error(error)
         return 1
 
 
